@@ -314,12 +314,12 @@ button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
      cap:'Six PMs with one archetype each. The week is narrower and the work goes deeper.'}
   ];
   var NOTES=[
-    'You are working with a founder mindset, and the work covers every archetype. A bigger team would split it, so the breadth comes from your situation. Go as broad as the company needs, and notice which archetype you enjoy most.',
-    'You cover several archetypes because the team is small. This is common, and you do not need to master each one. Pay attention to which of them you look forward to.',
-    'The work is splitting around you. This is a good moment to choose where to go deep and leave the rest to the PMs next to you.',
-    'If you like it, keep going deeper. Learn enough about the neighbouring archetypes to work well with them, and leave the rest of their work to the people who do it.'
+    'You are the only PM working on the product, so your scope spans most archetypes. You might speak to customers, decide what to build, work with engineers, and improve sign-ups, all in the same week. You cover what the product needs because there is no other PM to share the work with.',
+    'A few PMs work on the same product and share responsibilities. Each person still covers several archetypes. For example, you might own a part of the product and handle both building features and increasing their adoption. The work is divided, but each PM still needs a broad range of skills.',
+    'More PMs work on the same product, allowing responsibilities to become more specialised. One might focus on acquiring users, another on keeping them, and another on core features. You spend more time on a particular archetype, while still taking on work from others when needed.',
+    'The product has enough PMs for dedicated roles around specific archetypes. A growth PM might focus entirely on conversion, while a platform PM focuses on capabilities other teams need. Your responsibility is more focused, giving you room to build deep expertise while working closely with PMs who cover the other areas.'
   ];
-  var PICKS=['I do everything','I own one product, across several archetypes','I share a product with a few other PMs','I own one archetype'];
+  var PICKS=['Just you','Small team','Scale-up','Large company'];
   var Q2=[
     {label:'I decide what gets built, based on my own research',
      title:'Product Manager',sub:'You own what gets built, and why',
@@ -458,8 +458,6 @@ button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
     it.innerHTML='<button type="button" class="item-btn" aria-expanded="false" aria-controls="'+pid+'"><span class="lbl">'+txt+'</span>'+chev+'</button>'+
       '<div class="panel" id="'+pid+'"><div><div class="panel-in">'+
       '<div class="strip" aria-hidden="true">'+strip(s)+'</div>'+
-      '<div class="p-title">'+STAGES[s].t+'</div>'+
-      '<div class="p-sub">'+STAGES[s].s+'</div>'+
       '<p>'+NOTES[s]+'</p>'+
       '<button type="button" class="link-btn see">See it on the map</button>'+
       '</div></div></div>';
