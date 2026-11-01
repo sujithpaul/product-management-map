@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Product Management Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f4ee; --surface:#ffffff; --ink:#1f1e1d; --muted:#6b6a64; --line:#e3e1d8;
+  --accent:#c15f3c; --accent-soft:#f5e4db; --chip:#edebe3;
+  --build:#4f6e8a; --growth:#c15f3c; --data:#73608f; --technical:#5e7442; --platform:#8e5468; --ai:#8e6e2c;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1f1e1d; --surface:#2a2927; --ink:#f0eee6; --muted:#a8a59b; --line:#3a3935;
+    --accent:#d97757; --accent-soft:#3d2a22; --chip:#33322f;
+    --build:#5b7d9a; --growth:#c96a47; --data:#81709e; --technical:#6c834f; --platform:#9c6277; --ai:#9c7c35;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1f1e1d; --surface:#2a2927; --ink:#f0eee6; --muted:#a8a59b; --line:#3a3935;
+  --accent:#d97757; --accent-soft:#3d2a22; --chip:#33322f;
+  --build:#5b7d9a; --growth:#c96a47; --data:#81709e; --technical:#6c834f; --platform:#9c6277; --ai:#9c7c35;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:780px;margin:0 auto;padding:56px 24px 80px;--sec:64px;--block:24px;--gap:14px}
+h1,h2,h3{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:-0.025em;margin:0}
+h1{font-size:clamp(34px,5vw,46px);line-height:1.08;font-weight:700;letter-spacing:-0.035em}
+.tagline{font-size:clamp(20px,2.4vw,24px);line-height:1.35;font-weight:500;letter-spacing:-0.015em;color:var(--ink);margin:16px 0 0;max-width:36ch}
+.lede{color:var(--muted);font-size:clamp(17px,2vw,19px);line-height:1.6;margin:16px 0 0;max-width:62ch}
+h2{font-size:clamp(22px,2.8vw,26px);line-height:1.25;font-weight:700;letter-spacing:-0.02em;margin:0}
+p{margin:0;max-width:68ch}
+section{margin-top:var(--sec)}
+h2 + p{margin-top:var(--gap)}
+p + p{margin-top:var(--gap)}
+
+/* ---------- map ---------- */
+.caption{font-weight:600;font-size:clamp(19px,2.2vw,22px);line-height:1.4;letter-spacing:-0.01em;margin:var(--block) 0 16px;min-height:2.8em;transition:opacity .45s ease}
+.caption.fade{opacity:0}
+.viz{display:grid;grid-template-columns:150px 1fr;gap:20px;align-items:start}
+.viz-right{display:flex;flex-direction:column;gap:0}
+.timeline{position:relative;height:var(--h,420px);display:flex;flex-direction:column;justify-content:space-between;transition:height 1.6s cubic-bezier(.65,0,.35,1);padding:4px 0}
+.timeline::before{content:"";position:absolute;left:13px;top:14px;bottom:14px;width:3px;background:var(--line);border-radius:2px}
+.stage-btn{position:relative;display:flex;gap:12px;align-items:flex-start;background:none;border:0;padding:0;text-align:left;color:var(--muted);font:inherit;cursor:pointer;border-radius:8px}
+.stage-btn:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.dot{flex:none;width:26px;height:26px;border-radius:50%;background:var(--bg);border:3px solid var(--line);transition:background .6s,border-color .6s,transform .6s}
+.stage-btn .t{display:block;font-weight:600;font-size:16px;line-height:1.25}
+.stage-btn .s{display:block;font-size:14px;line-height:1.35;margin-top:2px}
+.stage-btn.on{color:var(--ink)}
+.stage-btn.on .dot{background:var(--accent);border-color:var(--accent);transform:scale(1.12)}
+
+.area{position:relative;height:var(--h,420px);transition:height 1.6s cubic-bezier(.65,0,.35,1)}
+.card{position:absolute;left:0;right:0;top:0;background:var(--surface);border:1px solid var(--line);border-radius:20px;z-index:1;
+  box-shadow:0 1px 2px rgba(16,24,40,.05),0 12px 28px -16px rgba(16,24,40,.22);
+  transition:transform 1.6s cubic-bezier(.65,0,.35,1),height 1.6s cubic-bezier(.65,0,.35,1),opacity .7s ease .55s}
+.card.hidden{opacity:0;transition:transform 1.6s cubic-bezier(.65,0,.35,1),height 1.6s cubic-bezier(.65,0,.35,1),opacity .45s ease 0s}
+.card-head{display:flex;align-items:center;gap:10px;height:52px;padding:0 16px;font-weight:600;font-size:16px;letter-spacing:-0.01em;white-space:nowrap;overflow:hidden}
+.card-head .lbl{transition:opacity .4s ease;overflow:hidden;text-overflow:ellipsis}
+.card-head .lbl.fade{opacity:0}
+.avatar{flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center}
+.avatar svg{width:15px;height:15px;fill:var(--accent)}
+
+.bar{position:absolute;left:14px;right:14px;top:0;height:58px;border-radius:14px;color:#fff;z-index:2;display:flex;align-items:center;gap:12px;padding:0 20px;overflow:hidden;white-space:nowrap;
+  transition:transform 1.6s cubic-bezier(.65,0,.35,1);will-change:transform}
+.bar .bn{font-weight:700;font-size:19px;letter-spacing:-0.015em}
+.bar .bd{font-size:16px;font-weight:400;opacity:.9;overflow:hidden;text-overflow:ellipsis}
+.bar .inner{position:relative;display:flex;gap:12px;align-items:center;min-width:0}
+.bar .ico{flex:none;width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-right:-2px}
+
+.controls{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.play-btn{flex:none;width:36px;height:36px;border-radius:50%;border:none;background:var(--accent);color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .2s,transform .15s}
+.play-btn:active{transform:scale(.93)}
+.play-btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.play-btn svg{width:16px;height:16px;fill:#fff}
+#playIco{display:none}
+#pauseIco{display:block}
+.paused #playIco{display:block}
+.paused #pauseIco{display:none}
+.progress{flex:1;height:3px;background:var(--line);border-radius:2px;overflow:hidden}
+.progress span{display:block;height:100%;width:0;background:var(--accent)}
+.link-btn{background:none;border:0;padding:0;font:inherit;font-weight:500;font-size:17px;color:var(--accent);text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.link-btn:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:4px}
+
+/* ---------- questions ---------- */
+.options{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.opt{font:inherit;font-size:15px;font-weight:400;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:10px 18px;cursor:pointer;text-align:left;transition:border-color .25s,background .25s}
+.opt:hover{border-color:var(--accent)}
+.opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.opt[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.answer{margin-top:16px;padding:16px 20px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 12px 12px 0;max-width:68ch;display:none}
+.answer.show{display:block}
+
+.acc{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.item{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;overflow:hidden;transition:border-color .25s,background .25s}
+.item.open{border-color:var(--accent);background:color-mix(in srgb,var(--accent-soft) 45%,var(--surface))}
+.item-btn{width:100%;display:flex;align-items:center;gap:12px;font:inherit;font-size:16px;font-weight:500;color:var(--ink);background:none;border:0;padding:16px 18px;min-height:56px;text-align:left;cursor:pointer}
+.item-btn:focus-visible{outline:2px solid var(--accent);outline-offset:-3px;border-radius:14px}
+.item-btn .lbl{flex:1}
+.chev{flex:none;width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:2;transition:transform .3s ease}
+.item.open .chev{transform:rotate(180deg);stroke:var(--accent)}
+.panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease}
+.item.open .panel{grid-template-rows:1fr}
+.panel>div{overflow:hidden}
+.panel-in{padding:0 18px 18px}
+.strip{display:flex;gap:4px;height:8px;margin:4px 0 16px}
+.strip span{display:flex;gap:2px;padding:0;border-radius:4px;overflow:hidden}
+.strip i{flex:1;display:block}
+.p-title{font-size:20px;line-height:1.3;margin-bottom:8px}
+.p-bold{font-weight:700;color:var(--ink);letter-spacing:-0.02em}
+.p-light{font-weight:400;color:var(--muted)}
+.panel-in p{margin:0;font-size:15.5px;line-height:1.6}
+.see{margin-top:16px;display:inline-block;font-size:15px}
+.after-acc{margin-top:20px;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){.panel,.chev{transition:none}}
+.sub{color:var(--muted)}
+
+.lane-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:var(--block)}
+.lane-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.lane-arch{display:inline-flex;align-items:center;gap:10px;color:var(--ink);font-weight:700;font-size:16px;letter-spacing:-0.01em;width:fit-content}
+.lane-arch svg{flex:none;box-sizing:content-box;width:16px;height:16px;padding:7px;border-radius:50%;background:var(--c);fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lane-card p{margin:0;font-size:14.5px;color:var(--muted);line-height:1.55}
+.callout{margin-top:var(--block);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px 24px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.callout + .callout{margin-top:12px}
+.callout-gh .callout-label{display:flex;align-items:center;gap:10px}
+.gh-ico{flex:none;width:22px;height:22px;fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round}
+.callout-label{font-weight:700;font-size:18px;line-height:1.3;letter-spacing:-0.015em;margin-bottom:8px}
+.callout p{margin:0;font-size:15.5px;line-height:1.6}
+.prompt-box{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:16px}
+.prompt-text{font-size:15px;line-height:1.6;color:var(--ink);margin-bottom:14px}
+.copy-btn{font:inherit;font-size:14px;font-weight:600;color:var(--accent);background:none;border:1.5px solid var(--accent);border-radius:8px;padding:7px 14px;cursor:pointer;transition:background .2s,color .2s}
+.copy-btn:hover{background:var(--accent);color:#fff}
+.callout .callout-footer{color:var(--muted);font-size:14.5px;margin-top:16px}
+.conclusion{padding-top:32px;border-top:1px solid var(--line)}
+.concl-main{font-size:16px;line-height:1.7;color:var(--muted);max-width:68ch}
+.conclusion p + p{margin-top:14px}
+.concl-sub{font-size:18px;line-height:1.55;font-weight:600;letter-spacing:-0.01em;color:var(--ink);max-width:60ch}
+.conclusion .byline{margin-top:32px;font-size:15px;color:var(--muted)}
+.byline a{color:var(--accent);font-weight:500;text-decoration:underline;text-underline-offset:3px}
+.byline a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+
+button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+@media (max-width:640px){
+  body{font-size:16px}
+  .wrap{padding:32px 18px 64px;--sec:48px;--block:20px;--gap:12px}
+  h1{font-size:34px;line-height:1.1}
+  .tagline{font-size:20px;margin-top:14px}
+  .lede{font-size:16.5px;margin-top:16px}
+  h2{font-size:22px}
+  .caption{font-size:18px;margin:var(--block) 0 14px;min-height:4.3em}
+  .viz{grid-template-columns:1fr;gap:0}
+  .timeline{height:auto !important;flex-direction:row;justify-content:space-between;gap:4px;padding:0;margin-bottom:16px}
+  .timeline::before{left:12.5%;right:12.5%;top:13px;bottom:auto;width:auto;height:2px}
+  .viz-right{gap:0}
+  .stage-btn{flex-direction:column;align-items:center;text-align:center;gap:6px;flex:1 1 0;min-width:0;padding:2px 0 4px;min-height:44px}
+  .dot{width:22px;height:22px}
+  .stage-btn .t{font-size:12.5px;line-height:1.2}
+  .stage-btn .s{font-size:11.5px}
+  .card{border-radius:16px}
+  .card-head{height:44px;padding:0 12px;font-size:15px;gap:8px}
+  .avatar{width:26px;height:26px}
+  .bar{left:10px;right:10px;height:50px;border-radius:12px;padding:0 14px}
+  .bar .inner{gap:8px}
+  .bar .bn{font-size:17px}
+  .bar .bd{font-size:14.5px}
+  .bar .ico{width:18px;height:18px}
+  .controls{margin-bottom:14px}
+  .link-btn{font-size:16px;padding:10px 0}
+  .options{flex-direction:column;gap:8px}
+  .opt{width:100%;border-radius:12px;padding:13px 16px;min-height:48px}
+  .answer{font-size:15.5px;padding:14px 16px}
+  .item-btn{font-size:15.5px;padding:14px 16px}
+  .panel-in{padding:0 16px 16px}
+  .lane-grid{grid-template-columns:1fr;gap:10px}
+  .lane-card{padding:16px}
+  .callout{padding:18px}
+}
+@media (prefers-reduced-motion: reduce){
+  .card,.bar,.area,.timeline{transition-duration:.01s}
+}
+.no-anim .card,.no-anim .bar,.no-anim.area{transition:none !important}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>The Product Management Map</h1>
+    <p class="tagline">Don’t ask what a PM is supposed to do. Ask where you are on the map, and whether you like it there.</p>
+  </header>
+  <section id="map">
+    <h2>Start with the founder mindset</h2>
+    <p>Some PMs have a founder mindset. They take on the whole product and do everything, from building to growth to data. Others pick the archetype that fits their interests and go deep in it. Both are PMs. Watch how the work splits as a company grows.</p>
+
+    <div class="caption" id="caption" aria-live="polite"></div>
+
+    <div class="viz">
+      <div class="timeline" id="timeline" role="tablist" aria-label="Company stage"></div>
+      <div class="viz-right">
+        <div class="controls">
+          <button class="play-btn" id="play" type="button" aria-label="Pause loop">
+            <svg id="playIco" viewBox="0 0 20 20" aria-hidden="true"><polygon points="6,4 16,10 6,16"/></svg>
+            <svg id="pauseIco" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="4" height="12" rx="1"/><rect x="11" y="4" width="4" height="12" rx="1"/></svg>
+          </button>
+          <div class="progress" aria-hidden="true"><span id="prog"></span></div>
+        </div>
+        <div class="area no-anim" id="area" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Which of these sounds like you?</h2>
+    <div class="acc" id="q1"></div>
+    <p class="after-acc">Many archetypes sit under the PM title. You can grow into several of them if you want to, and you can also pick one and stay there for a whole career.</p>
+  </section>
+
+  <section>
+    <h2>Who decides what gets built?</h2>
+    <p class="sub">This question separates product management from other jobs that share the title.</p>
+    <div class="acc" id="q2"></div>
+  </section>
+
+  <section>
+    <h2>Code is the new language of product work</h2>
+    <p>English used to be a PM’s primary language. You wrote a PRD, and engineering made it real.</p>
+    <p>Today, code is the superpower that can put you ahead of other PMs. You don’t need to become an engineer. Learn enough to build, test, and make your ideas tangible. You’ll validate faster, ship sooner, and stop waiting for someone else to get started.</p>
+
+    <div class="lane-grid">
+      <div class="lane-card">
+        <div class="lane-arch" style="--c:var(--build)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M3 9h18M8 21h8M12 17v4"/></svg>Build</div>
+        <p>You build screens and flows yourself. A rough prototype in a weekend. Good enough to show, sharp enough to change the conversation.</p>
+      </div>
+      <div class="lane-card">
+        <div class="lane-arch" style="--c:var(--growth)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>Growth</div>
+        <p>You write SQL. You pull your own numbers from Mixpanel or Amplitude. You don't wait for a data analyst to tell you what the funnel looks like.</p>
+      </div>
+      <div class="lane-card">
+        <div class="lane-arch" style="--c:var(--data)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20v-7M12 20V5M19 20v-11"/></svg>Data</div>
+        <p>You live in notebooks. You query, you transform, you visualise. The insight is yours before it reaches anyone else.</p>
+      </div>
+      <div class="lane-card">
+        <div class="lane-arch" style="--c:var(--technical)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6l-6 6 6 6M16 6l6 6-6 6"/></svg>Technical</div>
+        <p>You read the diff. You understand what shipped, what changed, and what the trade-off was. You can shape architecture because you speak the language it is written in.</p>
+      </div>
+      <div class="lane-card">
+        <div class="lane-arch" style="--c:var(--platform)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2v5M15 2v5M6 7h12v4a6 6 0 0 1-12 0zM12 17v5"/></svg>Platform</div>
+        <p>You design APIs the way a writer designs a sentence. You know what a good contract looks like before any code is written.</p>
+      </div>
+      <div class="lane-card">
+        <div class="lane-arch" style="--c:var(--ai)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 16v4M17 18h4"/></svg>AI</div>
+        <p>You run evals. You write prompts as specifications. You test models the way others test features.</p>
+      </div>
+    </div>
+
+    <div class="callout callout-gh">
+      <div class="callout-label"><svg class="gh-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2.2"/><circle cx="6" cy="19" r="2.2"/><circle cx="18" cy="7" r="2.2"/><path d="M6 7.2v9.6M18 9.2c0 4.5-4 5.3-8.4 7.8"/></svg>Start a GitHub repository</div>
+      <p>Put something in it. A prompt, a script, a prototype. The habit of shipping something you made matters more than what it is.</p>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">Never written a line of code?</div>
+      <p>The easiest way to start is to build something small and keep improving it. Open Claude, paste the prompt below, and see what comes back. Then change one thing. Then another. That loop is the whole lesson.</p>
+      <div class="prompt-box">
+        <div class="prompt-text" id="promptText">Build me a simple word-guessing game. The player gets 6 attempts to guess a 5-letter word, and after each guess show which letters are correct, which are in the word but in the wrong place, and which are not in the word at all. Make it playable in a browser.</div>
+        <button class="copy-btn" id="copyBtn" type="button" onclick="(function(){var t=document.getElementById('promptText').textContent;navigator.clipboard.writeText(t).then(function(){var b=document.getElementById('copyBtn');b.textContent='Copied';setTimeout(function(){b.textContent='Copy prompt';},2000);});})()">Copy prompt</button>
+      </div>
+      <p class="callout-footer">Once it works, ask Claude to add a timer, a score, a hard mode. Every change you request is a conversation in the language you are learning.</p>
+    </div>
+  </section>
+
+  <section class="conclusion">
+    <p class="concl-main">This map is a guide, not a rulebook. PM archetypes overlap, and your work shifts with company stage, team size, product maturity, and the people around you.</p>
+    <p class="concl-sub">Moving to a larger company doesn’t always mean career growth or more enjoyable work. What matters is whether you enjoy the work that fills most of your day.</p>
+    <p class="byline"><a href="https://www.linkedin.com/in/sujithpaulk/" target="_blank" rel="noopener">Connect on LinkedIn</a></p>
+  </section>
+</main>
+
+<script>
+(function(){
+  var ARCH=[
+    {k:'build',n:'Build',d:'ships features'},
+    {k:'growth',n:'Growth',d:'runs funnels and tests'},
+    {k:'data',n:'Data',d:'digs into metrics'},
+    {k:'technical',n:'Technical',d:'shapes architecture'},
+    {k:'platform',n:'Platform',d:'designs APIs'},
+    {k:'ai',n:'AI',d:'tests models and evals'}
+  ];
+  var ICO={
+    build:'<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M3 9h18M8 21h8M12 17v4"/>',
+    growth:'<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+    data:'<path d="M5 20v-7M12 20V5M19 20v-11"/>',
+    technical:'<path d="M8 6l-6 6 6 6M16 6l6 6-6 6"/>',
+    platform:'<path d="M9 2v5M15 2v5M6 7h12v4a6 6 0 0 1-12 0zM12 17v5"/>',
+    ai:'<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 16v4M17 18h4"/>'
+  };
+  var STAGES=[
+    {t:'Founder mindset',s:'Just you',groups:[[0,1,2,3,4,5]],
+     cap:'One PM, every archetype. You build it, grow it, measure it and fix it.'},
+    {t:'Wide scope',s:'Small team',groups:[[0,1,2],[3,4,5]],
+     cap:'Two PMs with three archetypes each. You still cover several and begin to lean toward the ones you like.'},
+    {t:'Narrow scope',s:'Scale-up',groups:[[0,1],[2,3],[4,5]],
+     cap:'Three PMs with two archetypes each. You can see the whole product and go deeper in a part of it.'},
+    {t:'Focused',s:'Large company',groups:[[0],[1],[2],[3],[4],[5]],
+     cap:'Six PMs with one archetype each. The week is narrower and the work goes deeper.'}
+  ];
+  var NOTES=[
+    'You are working with a founder mindset, and the work covers every archetype. A bigger team would split it, so the breadth comes from your situation. Go as broad as the company needs, and notice which archetype you enjoy most.',
+    'You cover several archetypes because the team is small. This is common, and you do not need to master each one. Pay attention to which of them you look forward to.',
+    'The work is splitting around you. This is a good moment to choose where to go deep and leave the rest to the PMs next to you.',
+    'If you like it, keep going deeper. Learn enough about the neighbouring archetypes to work well with them, and leave the rest of their work to the people who do it.'
+  ];
+  var PICKS=['I do everything','I own one product, across several archetypes','I share a product with a few other PMs','I own one archetype'];
+  var Q2=[
+    {label:'I decide what gets built, based on my own research',
+     title:'Product Manager',sub:'You own what gets built, and why',
+     note:'You set the direction using evidence you gathered yourself, from customers, data, and the market. The decision authority is yours, and so is the accountability.'},
+    {label:'Internal users tell me what they need',
+     title:'Product Owner',sub:'You translate needs into delivery',
+     note:'Your users sit inside the company and their requests set much of the agenda. The judgment you add is in what to prioritise and how to translate needs into something engineering can ship.'},
+    {label:'A client’s contract sets the scope',
+     title:'Project Manager',sub:'You own delivery, not direction',
+     note:'The contract already decided what gets built. Your job is to get it built on time, on scope and on budget.'}
+  ];
+  var HOLD=4200,mq=window.matchMedia('(max-width:640px)');
+  function D(){return mq.matches?{HEAD:44,BAR:50,GAP:8,PAD:10,CG:12}:{HEAD:52,BAR:58,GAP:10,PAD:14,CG:18};}
+  var area=document.getElementById('area'),tl=document.getElementById('timeline'),
+      cap=document.getElementById('caption'),root=document.documentElement,
+      playBtn=document.getElementById('play'),prog=document.getElementById('prog');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var person='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.2"/><path d="M3.8 21c.6-4.4 4-7 8.2-7s7.6 2.6 8.2 7z"/></svg>';
+  var cards=[],bars=[],btns=[];
+  for(var i=0;i<6;i++){
+    var c=document.createElement('div');c.className='card';
+    c.innerHTML='<div class="card-head"><span class="avatar">'+person+'</span><span class="lbl"></span></div>';
+    area.appendChild(c);cards.push(c);
+  }
+  ARCH.forEach(function(a,i){
+    var b=document.createElement('div');b.className='bar';
+    b.style.background='var(--'+a.k+')';
+    b.style.setProperty('--d',(i*0.9)+'s');
+    b.style.transitionDelay=(i*70)+'ms';
+    b.innerHTML='<span class="inner"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">'+ICO[a.k]+'</svg><span class="bn">'+a.n+'</span><span class="bd">'+a.d+'</span></span>';
+    area.appendChild(b);bars.push(b);
+  });
+  STAGES.forEach(function(st,i){
+    var b=document.createElement('button');b.type='button';b.className='stage-btn';b.setAttribute('role','tab');
+    b.innerHTML='<span class="dot"></span><span><span class="t">'+st.t+'</span><span class="s">'+st.s+'</span></span>';
+    b.addEventListener('click',function(){go(i);pause();});
+    tl.appendChild(b);btns.push(b);
+  });
+
+  function label(s,g){return s===0?'Founder mindset':g.map(function(i){return ARCH[i].n;}).join(' + ')+' PM';}
+  function layout(s){
+    var d=D(),HEAD=d.HEAD,BAR=d.BAR,GAP=d.GAP,PAD=d.PAD,CG=d.CG,y=0,geo=[],top=[];
+    STAGES[s].groups.forEach(function(g){
+      var h=HEAD+g.length*BAR+(g.length-1)*GAP+PAD;
+      geo.push({y:y,h:h});
+      g.forEach(function(b,j){top[b]=y+HEAD+j*(BAR+GAP);});
+      y+=h+CG;
+    });
+    return {geo:geo,top:top,total:y-CG,d:d};
+  }
+  function swapText(el,txt,first){
+    if(el.textContent===txt)return;
+    if(first){el.textContent=txt;return;}
+    el.classList.add('fade');
+    setTimeout(function(){el.textContent=txt;el.classList.remove('fade');},420);
+  }
+
+  var cur=-1;
+  function go(s,first){
+    cur=s;
+    var st=STAGES[s],L=layout(s),groups=st.groups;
+    root.style.setProperty('--h',L.total+'px');
+    bars.forEach(function(b,i){b.style.transform='translateY('+L.top[i]+'px)';});
+    cards.forEach(function(c,i){
+      var lbl=c.querySelector('.lbl'),g;
+      if(i<groups.length){
+        g=L.geo[i];c.classList.remove('hidden');
+        swapText(lbl,label(s,groups[i]),first);
+      }else{
+        // Park the hidden card right around the bars it will hold next,
+        // so it emerges in place instead of sliding down from the top.
+        var nxt=STAGES[(s+1)%STAGES.length].groups[i]||[i];
+        var a=L.top[nxt[0]],z=L.top[nxt[nxt.length-1]];
+        g={y:a-L.d.HEAD,h:(z+L.d.BAR+L.d.PAD)-(a-L.d.HEAD)};
+        c.classList.add('hidden');
+        lbl.textContent=STAGES[(s+1)%STAGES.length].groups[i]?label((s+1)%STAGES.length,nxt):'';
+      }
+      c.style.transform='translateY('+g.y+'px)';c.style.height=g.h+'px';
+    });
+    btns.forEach(function(b,i){b.classList.toggle('on',i===s);b.setAttribute('aria-selected',i===s);});
+    if(first){cap.textContent=st.cap;}else{
+      cap.classList.add('fade');setTimeout(function(){cap.textContent=st.cap;cap.classList.remove('fade');},450);
+    }
+  }
+
+  var playing=!reduce,timer=null,start=0,raf=null;
+  function tick(){
+    if(!playing)return;
+    var p=Math.min(1,(performance.now()-start)/HOLD);
+    prog.style.width=(p*100)+'%';
+    if(p>=1){go((cur+1)%STAGES.length);start=performance.now();}
+    raf=requestAnimationFrame(tick);
+  }
+  function play(){playing=true;playBtn.classList.remove('paused');playBtn.setAttribute('aria-label','Pause loop');start=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);}
+  function pause(){playing=false;playBtn.classList.add('paused');playBtn.setAttribute('aria-label','Play loop');cancelAnimationFrame(raf);prog.style.width='0%';}
+  playBtn.addEventListener('click',function(){playing?pause():play();});
+
+  go(0,true);
+  requestAnimationFrame(function(){requestAnimationFrame(function(){area.classList.remove('no-anim');});});
+  if(playing)play();else{playBtn.classList.add('paused');playBtn.setAttribute('aria-label','Play loop');}
+
+  function relayout(){go(cur,true);}
+  if(mq.addEventListener)mq.addEventListener('change',relayout);else mq.addListener(relayout);
+
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(e){
+      if(!playing)return;
+      cancelAnimationFrame(raf);
+      if(e[0].isIntersecting){start=performance.now();raf=requestAnimationFrame(tick);}
+    },{threshold:0.2}).observe(area);
+  }
+
+  function wire(id,ans,fn){
+    var box=document.getElementById(id),out=document.getElementById(ans);
+    box.querySelectorAll('.opt').forEach(function(o){
+      o.addEventListener('click',function(){
+        box.querySelectorAll('.opt').forEach(function(x){x.setAttribute('aria-pressed','false');});
+        o.setAttribute('aria-pressed','true');
+        out.textContent=fn(o);out.classList.add('show');
+      });
+    });
+  }
+  function strip(s){
+    // Show only the first group's archetypes — what *you* own at this stage
+    var g=STAGES[s].groups[0];
+    return g.map(function(b){
+      return '<span style="flex:1;height:8px;border-radius:4px;background:var(--'+ARCH[b].k+');display:block"></span>';
+    }).join('');
+  }
+  var q1=document.getElementById('q1'),items=[];
+  var chev='<svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 7.5l5 5 5-5"/></svg>';
+  PICKS.forEach(function(txt,s){
+    var it=document.createElement('div');it.className='item';
+    var pid='p'+s;
+    it.innerHTML='<button type="button" class="item-btn" aria-expanded="false" aria-controls="'+pid+'"><span class="lbl">'+txt+'</span>'+chev+'</button>'+
+      '<div class="panel" id="'+pid+'"><div><div class="panel-in">'+
+      '<div class="strip" aria-hidden="true">'+strip(s)+'</div>'+
+      '<div class="p-title">'+STAGES[s].t+'</div>'+
+      '<div class="p-sub">'+STAGES[s].s+'</div>'+
+      '<p>'+NOTES[s]+'</p>'+
+      '<button type="button" class="link-btn see">See it on the map</button>'+
+      '</div></div></div>';
+    var btn=it.querySelector('.item-btn');
+    btn.addEventListener('click',function(){
+      var open=!it.classList.contains('open');
+      items.forEach(function(x){x.classList.remove('open');x.querySelector('.item-btn').setAttribute('aria-expanded','false');});
+      if(open){it.classList.add('open');btn.setAttribute('aria-expanded','true');pause();go(s);}
+    });
+    it.querySelector('.see').addEventListener('click',function(){
+      cap.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});
+    });
+    q1.appendChild(it);items.push(it);
+  });
+  var q2el=document.getElementById('q2'),items2=[];
+  Q2.forEach(function(d,i){
+    var it=document.createElement('div');it.className='item';
+    var pid='p2-'+i;
+    it.innerHTML='<button type="button" class="item-btn" aria-expanded="false" aria-controls="'+pid+'"><span class="lbl"><span class="lbl-main">'+d.label+'</span></span>'+chev+'</button>'+
+      '<div class="panel" id="'+pid+'"><div><div class="panel-in">'+
+      '<div class="p-title"><span class="p-bold">You are a '+d.title+'</span><span class="p-light"> &nbsp;'+d.sub+'</span></div>'+
+      '<p>'+d.note+'</p>'+
+      '</div></div></div>';
+    it.querySelector('.item-btn').addEventListener('click',function(){
+      var open=!it.classList.contains('open');
+      items2.forEach(function(x){x.classList.remove('open');x.querySelector('.item-btn').setAttribute('aria-expanded','false');});
+      if(open){it.classList.add('open');it.querySelector('.item-btn').setAttribute('aria-expanded','true');}
+    });
+    q2el.appendChild(it);items2.push(it);
+  });
+})();
+</script>
+</body>
+</html>
